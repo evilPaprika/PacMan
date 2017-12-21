@@ -11,7 +11,7 @@ import threading
 
 class Board:
     def __init__(self):
-        self.food = []
+        self.food = {}
         self.moving_gameObjects = []
         self.walls = []
         self.pacman = None
@@ -24,22 +24,23 @@ class Board:
         self.check_collisions()
         for obj in self.moving_gameObjects[:]:
             obj.update_position()
-        for obj in self.food[:]:
-            if obj.is_dead: self.food.remove(obj)
+        # for obj in self.food[:]:
+        #     if obj.is_dead: self.food.remove(obj)
         if len(self.food) == 0:
             self.game_won = True
         elif self.pacman.lives <= 0:
             self.game_lost = True
-        else:
-            t = threading.Timer(0.02, function=self.update_board)
-            t.daemon = True
-            t.start()
+
 
     def check_collisions(self):
-        for s_obj in self.food:
-            if s_obj.location.distance(self.pacman.location) < 0.5:
-                s_obj.action_when_collided_with(self.pacman)
-                self.pacman.action_when_collided_with(s_obj)
+        if round(self.pacman.location) in self.food:
+            print("test")
+            self.food.pop(round(self.pacman.location))
+
+        # for s_obj in self.food:
+        #     if s_obj.location.distance(self.pacman.location) < 0.5:
+        #         s_obj.action_when_collided_with(self.pacman)
+        #         self.pacman.action_when_collided_with(s_obj)
         for s_obj in self.moving_gameObjects:
             if s_obj != self.pacman and s_obj.location.distance(self.pacman.location) < 0.7:
                 s_obj.action_when_collided_with(self.pacman)
@@ -95,9 +96,9 @@ class Board:
         self.walls.append(Wall(7, 13))
         self.walls.append(Wall(7, 14))
 
-        self.food.append(PowerFood(1, 1))
-        self.food.append(PowerFood(13, 12))
-        self.food.append(PowerFood(9, 9))
+        self.food.update({Point(1, 1): PowerFood(1, 1)})
+        self.food.update({Point(13, 12): PowerFood(13, 12)})
+        self.food.update({Point(9, 9): PowerFood(9, 9)})
 
         self.pacman = Pacman(7, 9, self)
         self.moving_gameObjects.append(self.pacman)
@@ -108,8 +109,9 @@ class Board:
 
         for i in range(15):
             for j in range(15):
-                for obj in itertools.chain(self.walls, self.food):
+                for obj in itertools.chain(self.walls, self.food.values()):
                     if obj.location == Point(i, j):
                         break
                 else:
-                    self.food.append(Food(i, j))
+                    self.food.update({Point(i, j): Food(i, j)})
+

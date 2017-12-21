@@ -14,7 +14,7 @@ class Window(tk.Tk):
         self.geometry('{}x{}'.format(BOARD_WIDTH * CELL_SIZE, int(BOARD_HIGHT * CELL_SIZE + CELL_SIZE / 2)))
         self.title("Pacman")
         self.iconbitmap("./sprites/pacman_icon.ico")
-        self.frame = GameLost(self, 42)
+        self.frame = game.Game(self)
         self.frame.pack()
 
     def change_frame(self, new_frame):

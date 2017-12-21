@@ -100,3 +100,4 @@ ENV/
 *.xml
 *.xml
 *.xml
+.idea/vcs.xml
