@@ -9,6 +9,9 @@ class Point:
         return y if y > x else x
         # return (self.x - other.x)**2 + (self.y - other.y)**2
 
+    def __hash__(self) -> int:
+        return self.x ** self.y
+
     def __eq__(self, other):
         return abs(self.x - other.x) < 0.00001 and abs(self.y - other.y) < 0.00001
 
@@ -23,6 +26,9 @@ class Point:
     
     def __sub__(self, other):
         return Point(self.x - other.x, self.y - other.y)
+
+    def __round__(self, n=None):
+        return Point(round(self.x), round(self.y))
     
     def normalise(self):
         n_x = self.x / abs(self.x) if self.x != 0 else 0
