@@ -1,10 +1,12 @@
 import tkinter as tk
+import winsound
 import gui.game
 
 
 class GameWon(tk.Frame):
     def __init__(self, parent, score):
         tk.Frame.__init__(self, parent)
+        winsound.PlaySound("./audio/pacman_end.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
         self.label1 = tk.Label(parent, text="CONGRATULATIONS", bg="black", fg="yellow", font=("MV Boli", 38, "bold"))
         self.label1.place(relx=.5, rely=.15, anchor="center")
         self.label2 = tk.Label(parent, text="FINAL SCORE: " + str(score),

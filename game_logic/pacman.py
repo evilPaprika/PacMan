@@ -1,4 +1,6 @@
 from threading import Timer
+
+import winsound
 from PIL import ImageTk
 from game_logic import BOARD_WIDTH
 from game_logic import BOARD_HIGHT
@@ -6,7 +8,6 @@ from game_logic.food import Food
 import game_logic.ghost
 from game_logic.point import Point
 from game_logic.power_food import PowerFood
-
 
 class Pacman:
     def __init__(self, x, y, board):
@@ -25,13 +26,16 @@ class Pacman:
 
     def action_when_collided_with(self, obj):
         if isinstance(obj, Food):
+            winsound.PlaySound("./audio/pacman_chomp.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.score += 10
-        if isinstance(obj, PowerFood):
+        elif isinstance(obj, PowerFood):
+            winsound.PlaySound("./audio/pacman_eatfruit.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.score += 100
             self.super_power += 1
             Timer(5.0, self.reset_super_power).start()
-        if isinstance(obj, game_logic.ghost.Ghost):
+        elif isinstance(obj, game_logic.ghost.Ghost):
             if not self.super_power:
+                winsound.PlaySound("./audio/pacman_death.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
                 self.location = Point(-1, -1)
                 self.lives -= 1
                 self.saved_direction = Point(0, 0)
@@ -40,13 +44,12 @@ class Pacman:
 
     def move(self, direction):
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
-        # хитрая математика для крсивого прохода через края без прыжков
+        # проход через края без прыжков
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
     def decide_direction(self):
-        location_rounded = round(self.location)
-        walls = list(self.board.get_neighbour_walls(location_rounded))
+        walls = self.board.get_neighbour_walls(round(self.location))
         new_location = self.location + self.direction * self.speed
         for wall in walls:
             if new_location.distance(wall.location) < 0.99:
@@ -64,8 +67,8 @@ class Pacman:
         return self.saved_direction
 
     def update_position(self):
-        d = self.decide_direction()
-        self.move(d)
+        if self.location != Point(-1, -1):
+            self.move(self.decide_direction())
 
     def get_sprite(self):
         return self.sprites[0]

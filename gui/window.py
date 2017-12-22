@@ -2,7 +2,6 @@ import tkinter as tk
 import gui.game as game
 from game_logic import BOARD_WIDTH, BOARD_HIGHT
 from gui import CELL_SIZE
-from gui.game_lost import GameLost
 
 
 class Window(tk.Tk):

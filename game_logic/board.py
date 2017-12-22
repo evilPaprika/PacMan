@@ -32,6 +32,8 @@ class Board:
         if self.pacman.lives <= 0:
             self.game_lost = True
 
+
+
     def check_collisions(self):
         pacman_location = round(self.pacman.location)
         if isinstance(self.field[pacman_location.x][pacman_location.y], Food) \
@@ -112,12 +114,13 @@ class Board:
         self.pacman = Pacman(7, 9, self)
         self.moving_gameObjects.append(self.pacman)
         self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_red.png"))
-        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_blue.png"))
-        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_pink.png"))
+        self.moving_gameObjects.append(Ghost(6, 5, self, "./sprites/ghost_blue.png"))
+        self.moving_gameObjects.append(Ghost(8, 5, self, "./sprites/ghost_pink.png"))
         self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_yellow.png"))
 
         for i in range(BOARD_HIGHT):
             for j in range(BOARD_WIDTH):
                 if self.field[i][j] is None:
                     self.field[i][j] = Food(i, j)
+        self.field[7][9] = None
 

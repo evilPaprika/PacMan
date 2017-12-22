@@ -1,5 +1,6 @@
 import threading
 import time
+import winsound
 from PIL import ImageTk
 from game_logic import BOARD_WIDTH, BOARD_HIGHT
 from game_logic.pacman import Pacman
@@ -26,7 +27,7 @@ class Ghost:
                                                            self.movement_marker[1].y * speed)
             self.direction = self.movement_marker[1]
             self.movement_marker = None
-        # хитрая математика для крсивого прохода через края без прыжков
+        # проход через края без прыжков
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
@@ -61,14 +62,14 @@ class Ghost:
         if isinstance(obj, Pacman):
             if obj.super_power:
                 threading.Thread(target=self.respawn).start()
-
+                winsound.PlaySound("./audio/pacman_eatghost.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
                 obj.score += 100
 
     def respawn(self):
         # запускать в отдельном потоке
         self.direction = Point(0, 0)
         self.location = Point(7, 7)
-        time.sleep(3)
+        time.sleep(7)
         self.direction = Point(0, -1)
         self.speed = self.speed / 2
         time.sleep(1)
