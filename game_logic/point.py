@@ -1,5 +1,5 @@
 class Point:
-    def __init__(self, x, y):
+    def __init__(self, x: float, y: float) -> None:
         self.x = x
         self.y = y
 
@@ -10,7 +10,9 @@ class Point:
         # return (self.x - other.x)**2 + (self.y - other.y)**2
 
     def __hash__(self) -> int:
-        return self.x ** self.y
+        a = round(self.x)
+        b = round(self.y)
+        return int((a + b) * (a + b + 1) / 2 + a)
 
     def __eq__(self, other):
         return abs(self.x - other.x) < 0.00001 and abs(self.y - other.y) < 0.00001
@@ -27,7 +29,7 @@ class Point:
     def __sub__(self, other):
         return Point(self.x - other.x, self.y - other.y)
 
-    def __round__(self, n=None):
+    def __round__(self):
         return Point(round(self.x), round(self.y))
     
     def normalise(self):

@@ -14,7 +14,7 @@ class GameLost(tk.Frame):
         self.new_game.place(relx=.5, rely=.50, anchor="center")
         self.quit = tk.Label(parent, text="QUIT", bg="black", fg="yellow", font=("MV Boli", 18, "bold"))
         self.quit.place(relx=.5, rely=.57, anchor="center")
-        self.new_game.bind("<Button-1>",lambda e: parent.change_frame(gui.game.Game(parent)))
+        self.new_game.bind("<Button-1>", lambda e: parent.change_frame(gui.game.Game(parent)))
         self.new_game.bind("<Enter>", lambda e: self.new_game.configure(fg="red"))
         self.new_game.bind("<Leave>", lambda e: self.new_game.configure(fg="yellow"))
         self.quit.bind("<Button-1>", lambda e: parent.quit())

@@ -1,13 +1,12 @@
+from PIL import ImageTk
+
 from game_logic.point import Point
 
 
 class Food:
     def __init__(self, x, y):
-        self.is_dead = False
         self.location = Point(x, y)
+        self.sprite = ImageTk.PhotoImage(file="./sprites/food.png")
 
     def get_sprite(self):
-        return "./sprites/food.png"
-
-    def action_when_collided_with(self, obj):
-        self.is_dead = True
+        return self.sprite

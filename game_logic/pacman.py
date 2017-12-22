@@ -1,4 +1,5 @@
 from threading import Timer
+from PIL import ImageTk
 from game_logic import BOARD_WIDTH
 from game_logic import BOARD_HIGHT
 from game_logic.food import Food
@@ -14,11 +15,13 @@ class Pacman:
         self.location = self.respawn_location
         self.saved_direction = Point(0, 0)
         self.direction = Point(0, 0)
+        self._directions = []
         self.speed = 0.1
-        self.lives = 1
-        self.walls = board.walls
+        self.lives = 3
+        self.board = board
         self.score = 0
         self.super_power = False
+        self.sprites = [ImageTk.PhotoImage(file="./sprites/pacman_0.png")]
 
     def action_when_collided_with(self, obj):
         if isinstance(obj, Food):
@@ -42,24 +45,30 @@ class Pacman:
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
     def decide_direction(self):
-        new_location = Point(self.location.x + self.direction.x * self.speed,
-                             self.location.y + self.direction.y * self.speed)
-        for wall in self.walls:
-            if wall.location.distance(new_location) < 0.99:
-                new_location = Point(self.location.x + self.saved_direction.x * self.speed,
-                                     self.location.y + self.saved_direction.y * self.speed)
-                for wall1 in self.walls:
-                    if wall1.location.distance(new_location) < 0.99:
-                        return Point(0, 0)
-                return self.saved_direction
+        location_rounded = round(self.location)
+        walls = list(self.board.get_neighbour_walls(location_rounded))
+        new_location = self.location + self.direction * self.speed
+        for wall in walls:
+            if new_location.distance(wall.location) < 0.99:
+                break
+        else:
+            self.saved_direction = Point(0, 0)
+            return self.direction
+        new_location = self.location + self.saved_direction * self.speed
+        for wall in walls:
+            if new_location.distance(wall.location) < 0.99:
+                break
+        else:
+            return self.saved_direction
         self.saved_direction = Point(0, 0)
-        return self.direction
+        return self.saved_direction
 
     def update_position(self):
-        self.move(self.decide_direction())
+        d = self.decide_direction()
+        self.move(d)
 
     def get_sprite(self):
-        return "./sprites/pacman_0.png"
+        return self.sprites[0]
 
     def set_new_direction(self, new_direction):
         if new_direction == self.direction:

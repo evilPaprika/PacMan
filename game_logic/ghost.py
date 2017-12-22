@@ -1,8 +1,6 @@
 import threading
-from math import floor
-
 import time
-
+from PIL import ImageTk
 from game_logic import BOARD_WIDTH, BOARD_HIGHT
 from game_logic.pacman import Pacman
 from game_logic.point import Point
@@ -11,11 +9,11 @@ import random
 
 class Ghost:
     def __init__(self, x, y, board, sprite):
-        self.sprite = sprite
+        self.sprite = ImageTk.PhotoImage(file=sprite)
+        self.scared_sprite = ImageTk.PhotoImage(file="./sprites/ghost_scared.png")
         self.is_dead = False
         self.location = Point(x, y)
         self.speed = 0.1
-        self.walls = board.walls
         self.board = board
         self.direction = Point(0, 0)
         self.movement_marker = None
@@ -33,16 +31,17 @@ class Ghost:
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
     def make_marker(self):
-        flored_location = Point(floor(self.location.x + 0.5), floor(self.location.y + 0.5))
+        location = round(self.location)
         directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
         random.shuffle(directions)
         for direction in directions:
-            if (direction * -1) == self.direction: continue
-            for wall in self.board.walls:
-                if (flored_location + direction) == wall.location:
+            if (direction * -1) == self.direction:
+                continue
+            for wall in self.board.get_neighbour_walls(location + direction):
+                if (location + direction) == wall.location:
                     break
             else:
-                self.movement_marker = (flored_location, direction)
+                self.movement_marker = (location, direction)
                 break
 
     def update_position(self):
@@ -54,7 +53,7 @@ class Ghost:
 
     def get_sprite(self):
         if self.board.pacman.super_power:
-            return "./sprites/ghost_scared.png"
+            return self.scared_sprite
         else:
             return self.sprite
 

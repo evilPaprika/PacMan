@@ -1,10 +1,12 @@
 import tkinter as tk
 from PIL import ImageTk
 import game_logic.board as board
+import itertools
 from game_logic import BOARD_HIGHT
 from game_logic import BOARD_WIDTH
+from game_logic.food import Food
+from game_logic.power_food import PowerFood
 from gui import CELL_SIZE
-from gui.drawing_object import DrawingObject
 from gui.game_lost import GameLost
 from gui.game_won import GameWon
 
@@ -16,7 +18,6 @@ class Game(tk.Frame):
         self.board = board.Board()
         self.canvas = tk.Canvas(self, width=BOARD_WIDTH * CELL_SIZE, height=(BOARD_HIGHT * CELL_SIZE) + CELL_SIZE / 2,
                                 background="black")
-        self.food_sprite = ImageTk.PhotoImage(file="./sprites/food.png")
         self.initialise_canvas()
         self.canvas.pack()
         self.frame_update_loop()
@@ -24,23 +25,19 @@ class Game(tk.Frame):
     def frame_update_loop(self):
         self.canvas.itemconfig(self.score_canvas, text="score: " + str(self.board.pacman.score))
         self.canvas.itemconfig(self.lives_canvas, text="lives left: " + "●" * self.board.pacman.lives)
-        for m_obj in self.moving_drawing_objects:
-            m_obj.update_sprite()
+        for m_obj in self.board.moving_gameObjects:
+            self.canvas.itemconfig(m_obj.canvas, image=m_obj.get_sprite())
             self.update_moving_object_position(m_obj)
-        for s_obj in self.food_drawing_objests[:]:
-            if s_obj.board_object.is_dead:
-                self.canvas.delete(s_obj.canvas_ID)
-                self.food_drawing_objests.remove(s_obj)
         if self.board.game_won:
             self.parent.change_frame(GameWon(self.parent, self.board.pacman.score))
         if self.board.game_lost:
             self.parent.change_frame(GameLost(self.parent, self.board.pacman.score))
         self.board.update_board()
-        self.after(10, self.frame_update_loop)
+        self.after(30, self.frame_update_loop)
 
     def update_moving_object_position(self, m_obj):
-        self.canvas.coords(m_obj.canvas_ID, m_obj.board_object.location.x * CELL_SIZE,
-                           m_obj.board_object.location.y * CELL_SIZE)
+        self.canvas.coords(m_obj.canvas, m_obj.location.x * CELL_SIZE,
+                           m_obj.location.y * CELL_SIZE)
 
     def initialise_canvas(self):
         self.images = []
@@ -54,20 +51,11 @@ class Game(tk.Frame):
         self.lives_canvas = self.canvas.create_text(340, BOARD_HIGHT * CELL_SIZE,
                                                     text="lives left: " + str(self.board.pacman.lives), fill="yellow",
                                                     font=("MV Boli", 17, "bold"), anchor='w')
-        self.food_drawing_objests = []
-        self.moving_drawing_objects = []
-        for obj in self.board.food.values():
-            img = ImageTk.PhotoImage(file=obj.get_sprite())
-            self.food_drawing_objests.append(DrawingObject(obj, self.canvas.create_image(obj.location.x * CELL_SIZE,
-                                                                                         obj.location.y * CELL_SIZE,
-                                                                                         image=img, anchor="nw"), img,
-                                                           self.canvas))
-        for obj in self.board.moving_gameObjects:
-            img = ImageTk.PhotoImage(file=obj.get_sprite())
-            self.moving_drawing_objects.append(DrawingObject(obj, self.canvas.create_image(obj.location.x * CELL_SIZE,
-                                                                                           obj.location.y * CELL_SIZE,
-                                                                                           image=img, anchor="nw"), img,
-                                                             self.canvas))
+
+        for obj in itertools.chain(filter(lambda x: isinstance(x, Food) or isinstance(x, PowerFood), itertools.chain.from_iterable(zip(*self.board.field))), self.board.moving_gameObjects):
+            obj.canvas = self.canvas.create_image(obj.location.x * CELL_SIZE, obj.location.y * CELL_SIZE,
+                                                  image=obj.get_sprite(), anchor="nw")
+
         self.canvas.bind('<Up>', lambda e: self.board.pacman.set_direction_up())
         self.canvas.bind('<Down>', lambda e: self.board.pacman.set_direction_down())
         self.canvas.bind('<Left>', lambda e: self.board.pacman.set_direction_left())
