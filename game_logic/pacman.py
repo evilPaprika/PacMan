@@ -8,6 +8,8 @@ from game_logic.food import Food
 import game_logic.ghost
 from game_logic.point import Point
 from game_logic.power_food import PowerFood
+from game_logic.prize import Prize
+
 
 class Pacman:
     def __init__(self, x, y, board):
@@ -17,7 +19,7 @@ class Pacman:
         self.saved_direction = Point(0, 0)
         self.direction = Point(0, 0)
         self._directions = []
-        self.speed = 0.1
+        self.speed = 0.2
         self.lives = 3
         self.board = board
         self.score = 0
@@ -28,6 +30,7 @@ class Pacman:
         if isinstance(obj, Food):
             winsound.PlaySound("./audio/pacman_chomp.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.score += 10
+            self.board.food_left -= 1
         elif isinstance(obj, PowerFood):
             winsound.PlaySound("./audio/pacman_eatfruit.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.score += 100
@@ -41,15 +44,22 @@ class Pacman:
                 self.saved_direction = Point(0, 0)
                 self.direction = Point(0, 0)
                 Timer(1.0, self.respawn).start()
+        elif isinstance(obj, Prize):
+            winsound.PlaySound("./audio/pacman_eatfruit.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+            self.score += 200
 
     def move(self, direction):
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
         # проход через края без прыжков
+        if self.location.x - round(self.location.x) < 0.02:
+            self.location.x = round(self.location.x)
+        if self.location.y - round(self.location.y) < 0.02:
+            self.location.y = round(self.location.y)
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
     def decide_direction(self):
-        walls = self.board.get_neighbour_walls(round(self.location))
+        walls = list(self.board.get_neighbour_walls(round(self.location)))
         new_location = self.location + self.direction * self.speed
         for wall in walls:
             if new_location.distance(wall.location) < 0.99:

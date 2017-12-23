@@ -14,7 +14,7 @@ class Ghost:
         self.scared_sprite = ImageTk.PhotoImage(file="./sprites/ghost_scared.png")
         self.is_dead = False
         self.location = Point(x, y)
-        self.speed = 0.1
+        self.speed = 0.2
         self.board = board
         self.direction = Point(0, 0)
         self.movement_marker = None
@@ -63,7 +63,7 @@ class Ghost:
             if obj.super_power:
                 threading.Thread(target=self.respawn).start()
                 winsound.PlaySound("./audio/pacman_eatghost.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
-                obj.score += 100
+                obj.score += 200
 
     def respawn(self):
         # запускать в отдельном потоке

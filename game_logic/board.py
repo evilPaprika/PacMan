@@ -1,14 +1,18 @@
+import random
 from game_logic import BOARD_HIGHT, BOARD_WIDTH
 from game_logic.food import Food
 from game_logic.ghost import Ghost
 from game_logic.pacman import Pacman
 from game_logic.power_food import PowerFood
+from game_logic.prize import Prize
 from game_logic.wall import Wall
 
 
 class Board:
     def __init__(self):
+        self.food_left = 0
         self.moving_gameObjects = []
+        self.new_objects = []
         self.field = [[None for x in range(BOARD_WIDTH)] for y in range(BOARD_HIGHT)]
         self.pacman = None
         self.generate_level()
@@ -17,27 +21,20 @@ class Board:
         self.update_board()
 
     def update_board(self):
+        print(self.food_left)
         self.check_collisions()
         for obj in self.moving_gameObjects[:]:
             obj.update_position()
-        for i in range(15):
-            for j in range(15):
-                if isinstance(self.field[i][j], Food):
-                    break
-            else:
-                continue
-            break
-        else:
+        if self.food_left == 80 or self.food_left == 50 or self.food_left == 20:
+            self.spawn_prize()
+        if self.food_left < 1:
             self.game_won = True
         if self.pacman.lives <= 0:
             self.game_lost = True
 
-
-
     def check_collisions(self):
         pacman_location = round(self.pacman.location)
-        if isinstance(self.field[pacman_location.x][pacman_location.y], Food) \
-                or isinstance(self.field[pacman_location.x][pacman_location.y], PowerFood):
+        if not isinstance(self.field[pacman_location.x][pacman_location.y], Wall):
             self.pacman.action_when_collided_with(self.field[pacman_location.x][pacman_location.y])
             self.field[pacman_location.x][pacman_location.y] = None
         for s_obj in self.moving_gameObjects:
@@ -54,6 +51,15 @@ class Board:
                         yield obj
                 except IndexError:
                     pass
+
+    def spawn_prize(self):
+        i = random.randrange(15)
+        j = random.randrange(15)
+        if isinstance(self.field[i][j], Food):
+            self.field[i][j] = Prize(i, j)
+            self.food_left -= 1
+            self.new_objects.append(self.field[i][j])
+        else: self.spawn_prize()
 
     def generate_level(self):
         for i in range(7):
@@ -110,7 +116,7 @@ class Board:
         self.field[1][1] = PowerFood(1, 1)
         self.field[13][12] = PowerFood(13, 12)
         self.field[9][9] = PowerFood(9, 9)
-
+        self.field[9][8] = Prize(9, 8)
         self.pacman = Pacman(7, 9, self)
         self.moving_gameObjects.append(self.pacman)
         self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_red.png"))
@@ -122,5 +128,7 @@ class Board:
             for j in range(BOARD_WIDTH):
                 if self.field[i][j] is None:
                     self.field[i][j] = Food(i, j)
+                    self.food_left += 1
         self.field[7][9] = None
+        self.food_left -= 1
 
