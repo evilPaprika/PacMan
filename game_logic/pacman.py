@@ -1,11 +1,12 @@
+import winsound
 from threading import Timer
 
-import winsound
-from PIL import ImageTk
-from game_logic import BOARD_WIDTH
-from game_logic import BOARD_HIGHT
-from game_logic.food import Food
+from PIL import ImageTk, Image
+
 import game_logic.ghost
+from game_logic import BOARD_HIGHT
+from game_logic import BOARD_WIDTH
+from game_logic.food import Food
 from game_logic.point import Point
 from game_logic.power_food import PowerFood
 from game_logic.prize import Prize
@@ -17,14 +18,17 @@ class Pacman:
         self.respawn_location = Point(x, y)
         self.location = self.respawn_location
         self.saved_direction = Point(0, 0)
+        self.last_direction = Point(1, 0)
         self.direction = Point(0, 0)
         self._directions = []
+        self.sprites = {}
         self.speed = 0.2
         self.lives = 3
         self.board = board
         self.score = 0
-        self.super_power = False
-        self.sprites = [ImageTk.PhotoImage(file="./sprites/pacman_0.png")]
+        self.super_power = 0
+        self.teleport_delay = False
+        self._configure_sprites()
 
     def action_when_collided_with(self, obj):
         if isinstance(obj, Food):
@@ -35,7 +39,7 @@ class Pacman:
             winsound.PlaySound("./audio/pacman_eatfruit.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.score += 100
             self.super_power += 1
-            Timer(5.0, self.reset_super_power).start()
+            Timer(5.0, self._reset_super_power).start()
         elif isinstance(obj, game_logic.ghost.Ghost):
             if not self.super_power:
                 winsound.PlaySound("./audio/pacman_death.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
@@ -51,10 +55,6 @@ class Pacman:
     def move(self, direction):
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
         # проход через края без прыжков
-        if self.location.x - round(self.location.x) < 0.02:
-            self.location.x = round(self.location.x)
-        if self.location.y - round(self.location.y) < 0.02:
-            self.location.y = round(self.location.y)
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
@@ -78,10 +78,13 @@ class Pacman:
 
     def update_position(self):
         if self.location != Point(-1, -1):
-            self.move(self.decide_direction())
+            new_dir = self.decide_direction()
+            if new_dir != Point(0, 0):
+                self.last_direction = new_dir
+            self.move(new_dir)
 
     def get_sprite(self):
-        return self.sprites[0]
+        return self.sprites[self.last_direction][round((self.location.x + self.location.y) * 10) % 3]
 
     def set_new_direction(self, new_direction):
         if new_direction == self.direction:
@@ -108,5 +111,27 @@ class Pacman:
     def respawn(self):
         self.location = self.respawn_location
 
-    def reset_super_power(self):
+    def _reset_super_power(self):
         self.super_power -= 1
+
+    def _reset_teleport_delay(self):
+        self.teleport_delay = False
+
+    def teleport_cooldown(self):
+        self.teleport_delay = True
+        Timer(1.0, self._reset_teleport_delay).start()
+
+    def _configure_sprites(self):
+        self.sprites = {Point(1, 0) : [ImageTk.PhotoImage(file="./sprites/pacman_1.png"),
+                                      ImageTk.PhotoImage(file="./sprites/pacman_2.png") ,
+                                    ImageTk.PhotoImage(file="./sprites/pacman_3.png")],
+                        Point(0, 1) : [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(270)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(270)) ,
+                                     ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(270))],
+                        Point(-1, 0): [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(180)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(180)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(180))],
+                        Point(0, -1): [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(90)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(90)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(90))]
+                        }

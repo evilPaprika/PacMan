@@ -1,15 +1,13 @@
+import itertools
+import time
 import tkinter as tk
 import winsound
-from threading import Thread
 
-import time
 from PIL import ImageTk
+
 import game_logic.board as board
-import itertools
 from game_logic import BOARD_HIGHT
 from game_logic import BOARD_WIDTH
-from game_logic.food import Food
-from game_logic.power_food import PowerFood
 from game_logic.wall import Wall
 from gui import CELL_SIZE
 from gui.game_lost import GameLost

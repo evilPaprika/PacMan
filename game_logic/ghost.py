@@ -14,10 +14,11 @@ class Ghost:
         self.scared_sprite = ImageTk.PhotoImage(file="./sprites/ghost_scared.png")
         self.is_dead = False
         self.location = Point(x, y)
-        self.speed = 0.2
+        self.speed = 0.19
         self.board = board
         self.direction = Point(0, 0)
         self.movement_marker = None
+        self.teleport_delay = False
 
     def move(self, speed):
         new_location = Point(self.location.x + self.direction.x * speed, self.location.y + self.direction.y * speed)
@@ -38,8 +39,9 @@ class Ghost:
         for direction in directions:
             if (direction * -1) == self.direction:
                 continue
-            for wall in self.board.get_neighbour_walls(location + direction):
-                if (location + direction) == wall.location:
+            new_location = location + direction
+            for wall in self.board.get_neighbour_walls(new_location):
+                if new_location == wall.location:
                     break
             else:
                 self.movement_marker = (location, direction)
@@ -74,3 +76,10 @@ class Ghost:
         self.speed = self.speed / 2
         time.sleep(1)
         self.speed = self.speed * 2
+
+    def _reset_teleport_delay(self):
+        self.teleport_delay = False
+
+    def teleport_cooldown(self):
+        self.teleport_delay = True
+        threading.Timer(1.0, self._reset_teleport_delay).start()

@@ -3,6 +3,7 @@ from game_logic import BOARD_HIGHT, BOARD_WIDTH
 from game_logic.food import Food
 from game_logic.ghost import Ghost
 from game_logic.pacman import Pacman
+from game_logic.portal import Portal
 from game_logic.power_food import PowerFood
 from game_logic.prize import Prize
 from game_logic.wall import Wall
@@ -15,13 +16,13 @@ class Board:
         self.new_objects = []
         self.field = [[None for x in range(BOARD_WIDTH)] for y in range(BOARD_HIGHT)]
         self.pacman = None
+        self.portals = []
         self.generate_level()
         self.game_lost = False
         self.game_won = False
         self.update_board()
 
     def update_board(self):
-        print(self.food_left)
         self.check_collisions()
         for obj in self.moving_gameObjects[:]:
             obj.update_position()
@@ -37,10 +38,11 @@ class Board:
         if not isinstance(self.field[pacman_location.x][pacman_location.y], Wall):
             self.pacman.action_when_collided_with(self.field[pacman_location.x][pacman_location.y])
             self.field[pacman_location.x][pacman_location.y] = None
-        for s_obj in self.moving_gameObjects:
-            if s_obj != self.pacman and s_obj.location.distance(self.pacman.location) < 0.5:
-                s_obj.action_when_collided_with(self.pacman)
-                self.pacman.action_when_collided_with(s_obj)
+        for i in range(len(self.moving_gameObjects)):
+            for j in range(i + 1, len(self.moving_gameObjects)):
+                if self.moving_gameObjects[i].location.distance(self.moving_gameObjects[j].location) < 0.5:
+                    self.moving_gameObjects[i].action_when_collided_with(self.moving_gameObjects[j])
+                    self.moving_gameObjects[j].action_when_collided_with(self.moving_gameObjects[i])
 
     def get_neighbour_walls(self, point):
         for i in range(-1, 2):
@@ -78,7 +80,7 @@ class Board:
         self.field[3][2] = (Wall(3, 2))
         self.field[3][6] = (Wall(3, 6))
         self.field[3][8] = (Wall(3, 8))
-        self.field[4][4] = (Wall(4, 4))
+        # self.field[4][4] = (Wall(4, 4))
         self.field[4][5] = (Wall(4, 5))
         self.field[4][6] = (Wall(4, 6))
         self.field[4][8] = (Wall(4, 8))
@@ -103,21 +105,29 @@ class Board:
 
         self.field[7][0] = (Wall(7, 0))
         self.field[7][2] = (Wall(7, 2))
-        self.field[7][3] = (Wall(7, 3))
+
+        self.field[7][3] = (Wall(7, 3)) #
+
         self.field[7][4] = (Wall(7, 4))
         self.field[7][6] = (Wall(7, 6))
         self.field[7][7] = (Wall(7, 7))
         self.field[7][8] = (Wall(7, 8))
         self.field[7][10] = (Wall(7, 10))
         self.field[7][11] = (Wall(7, 11))
-        self.field[7][13] = (Wall(7, 13))
+        # self.field[7][13] = (Wall(7, 13))
         self.field[7][14] = (Wall(7, 14))
 
         self.field[1][1] = PowerFood(1, 1)
-        self.field[13][12] = PowerFood(13, 12)
-        self.field[9][9] = PowerFood(9, 9)
-        self.field[9][8] = Prize(9, 8)
+        self.field[13][13] = PowerFood(13, 13)
+        self.field[1][13] = PowerFood(1, 13)
+        self.field[13][1] = PowerFood(13, 1)
+
+
         self.pacman = Pacman(7, 9, self)
+        self.portals.append(Portal(7, 13, 4, 4))
+        self.portals.append(Portal(4, 4, 7, 13))
+        self.moving_gameObjects.append(self.portals[0])
+        self.moving_gameObjects.append(self.portals[1])
         self.moving_gameObjects.append(self.pacman)
         self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_red.png"))
         self.moving_gameObjects.append(Ghost(6, 5, self, "./sprites/ghost_blue.png"))
