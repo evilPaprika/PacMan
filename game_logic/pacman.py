@@ -27,7 +27,7 @@ class Pacman:
         self.board = board
         self.score = 0
         self.super_power = 0
-        self.teleport_delay = False
+        self.last_teleported = 0
         self._configure_sprites()
 
     def action_when_collided_with(self, obj):
@@ -54,23 +54,26 @@ class Pacman:
 
     def move(self, direction):
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
-        # проход через края без прыжков
+        # проход через края
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
     def decide_direction(self):
-        walls = list(self.board.get_neighbour_walls(round(self.location)))
-        new_location = self.location + self.direction * self.speed
+        if self.direction.is_opposite(self.saved_direction):
+            self.saved_direction = Point(0, 0)
+            return self.direction
+        if self.location != round(self.location):
+            return self.last_direction
+        walls = list(self.board.get_neighbour_walls(self.location))
+        new_location = self.location + self.direction
         for wall in walls:
-            if new_location.distance(wall.location) < 0.99:
-                break
+            if new_location == wall.location: break
         else:
             self.saved_direction = Point(0, 0)
             return self.direction
-        new_location = self.location + self.saved_direction * self.speed
+        new_location = self.location + self.saved_direction
         for wall in walls:
-            if new_location.distance(wall.location) < 0.99:
-                break
+            if new_location == wall.location: break
         else:
             return self.saved_direction
         self.saved_direction = Point(0, 0)
@@ -113,13 +116,6 @@ class Pacman:
 
     def _reset_super_power(self):
         self.super_power -= 1
-
-    def _reset_teleport_delay(self):
-        self.teleport_delay = False
-
-    def teleport_cooldown(self):
-        self.teleport_delay = True
-        Timer(1.0, self._reset_teleport_delay).start()
 
     def _configure_sprites(self):
         self.sprites = {Point(1, 0) : [ImageTk.PhotoImage(file="./sprites/pacman_1.png"),

@@ -40,3 +40,9 @@ class Point:
     def heading_same_way(self, other):
         # напр (0.5, 0) и (1, 0)
         return self.normalise() == other.normalise()
+
+    def is_opposite(self, other):
+        other = other.normalise()
+        other.x = -other.x
+        other.y = -other.y
+        return self.normalise() == other

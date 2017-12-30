@@ -19,6 +19,7 @@ class Ghost:
         self.direction = Point(0, 0)
         self.movement_marker = None
         self.teleport_delay = False
+        self.last_teleported = 0
 
     def move(self, speed):
         new_location = Point(self.location.x + self.direction.x * speed, self.location.y + self.direction.y * speed)
@@ -28,27 +29,33 @@ class Ghost:
                                                            self.movement_marker[1].y * speed)
             self.direction = self.movement_marker[1]
             self.movement_marker = None
-        # проход через края без прыжков
+        # проход через края
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
-    def make_marker(self):
-        location = round(self.location)
+    def _get_prefered_directions(self):
         directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
         random.shuffle(directions)
+        return directions
+
+    def _make_marker(self):
+        location = round(self.location)
+        directions = self._get_prefered_directions()
         for direction in directions:
-            if (direction * -1) == self.direction:
+            if direction.is_opposite(self.direction):
                 continue
             new_location = location + direction
-            for wall in self.board.get_neighbour_walls(new_location):
+            walls = self.board.get_neighbour_walls(location)
+            for wall in walls:
                 if new_location == wall.location:
                     break
             else:
                 self.movement_marker = (location, direction)
                 break
 
+
     def update_position(self):
-        self.make_marker()
+        self._make_marker()
         if self.board.pacman.super_power:
             self.move(self.speed / 2)
         else:
@@ -76,10 +83,3 @@ class Ghost:
         self.speed = self.speed / 2
         time.sleep(1)
         self.speed = self.speed * 2
-
-    def _reset_teleport_delay(self):
-        self.teleport_delay = False
-
-    def teleport_cooldown(self):
-        self.teleport_delay = True
-        threading.Timer(1.0, self._reset_teleport_delay).start()

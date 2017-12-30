@@ -45,14 +45,13 @@ class Board:
                     self.moving_gameObjects[j].action_when_collided_with(self.moving_gameObjects[i])
 
     def get_neighbour_walls(self, point):
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                try:
-                    obj = self.field[point.x + i][point.y + j]
-                    if isinstance(obj, Wall):
-                        yield obj
-                except IndexError:
-                    pass
+        for dir in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            try:
+                obj = self.field[round(point.x + dir[0])][round(point.y + dir[1])]
+                if isinstance(obj, Wall):
+                    yield obj
+            except IndexError:
+                pass
 
     def spawn_prize(self):
         i = random.randrange(15)
@@ -116,6 +115,7 @@ class Board:
         self.field[7][11] = (Wall(7, 11))
         # self.field[7][13] = (Wall(7, 13))
         self.field[7][14] = (Wall(7, 14))
+        self.field[10][4] = (Wall(10, 4)) #
 
         self.field[1][1] = PowerFood(1, 1)
         self.field[13][13] = PowerFood(13, 13)

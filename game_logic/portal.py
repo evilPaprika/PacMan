@@ -15,9 +15,10 @@ class Portal:
         return self.sprite
 
     def action_when_collided_with(self, obj):
-        if not obj.teleport_delay:
+        timestamp = time.time()
+        if timestamp > obj.last_teleported + 1:
             obj.location = self.exit_location
-        obj.teleport_cooldown()
+            obj.last_teleported = timestamp
 
     def update_position(self):
         pass
