@@ -25,11 +25,9 @@ class Board:
         self.field = [[None for x in range(BOARD_WIDTH)] for y in range(BOARD_HEIGHT)]
         self.pacman = None
         self.portals = []
-        self.generate_level()
         self.game_lost = False
         self.game_won = False
         self.game_state = 'scatter' # scatter, chase или frightened
-        self.update_board()
 
     def update_board(self):
         self.check_collisions()
@@ -52,6 +50,7 @@ class Board:
             self.game_state = 'scatter'
         else:
             self.game_state = 'chase'
+        print(self.game_state)
 
     def check_collisions(self):
         pacman_location = round(self.pacman.location)

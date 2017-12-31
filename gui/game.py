@@ -20,6 +20,7 @@ class Game(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.board = board.Board()
+        self.board.generate_level()
         self.canvas = tk.Canvas(self, width=BOARD_WIDTH * CELL_SIZE, height=(BOARD_HEIGHT * CELL_SIZE) + CELL_SIZE / 2,
                                 background="black")
         self.canvas.pack()
