@@ -10,10 +10,11 @@ from game_logic.food import Food
 from game_logic.point import Point
 from game_logic.power_food import PowerFood
 from game_logic.prize import Prize
+from game_logic.wall import Wall
 
 
 class Pacman:
-    def __init__(self, x, y, board):
+    def __init__(self, x, y, board, speed):
         self.is_dead = False
         self.respawn_location = Point(x, y)
         self.location = self.respawn_location
@@ -22,7 +23,7 @@ class Pacman:
         self.direction = Point(0, 0)
         self._directions = []
         self.sprites = {}
-        self.speed = 0.2
+        self.speed = speed
         self.lives = 3
         self.board = board
         self.score = 0
@@ -64,17 +65,12 @@ class Pacman:
             return self.direction
         if self.location != round(self.location):
             return self.last_direction
-        walls = list(self.board.get_neighbour_walls(self.location))
-        new_location = self.location + self.direction
-        for wall in walls:
-            if new_location == wall.location: break
-        else:
+        new_location = round(self.location + self.direction)
+        if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
             self.saved_direction = Point(0, 0)
             return self.direction
-        new_location = self.location + self.saved_direction
-        for wall in walls:
-            if new_location == wall.location: break
-        else:
+        new_location = round(self.location + self.saved_direction)
+        if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
             return self.saved_direction
         self.saved_direction = Point(0, 0)
         return self.saved_direction
@@ -118,16 +114,16 @@ class Pacman:
         self.super_power -= 1
 
     def _configure_sprites(self):
-        self.sprites = {Point(1, 0) : [ImageTk.PhotoImage(file="./sprites/pacman_1.png"),
-                                      ImageTk.PhotoImage(file="./sprites/pacman_2.png") ,
-                                    ImageTk.PhotoImage(file="./sprites/pacman_3.png")],
-                        Point(0, 1) : [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(270)),
-                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(270)) ,
-                                     ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(270))],
+        self.sprites = {Point(1, 0): [ImageTk.PhotoImage(file="./sprites/pacman_1.png"),
+                                      ImageTk.PhotoImage(file="./sprites/pacman_2.png"),
+                                      ImageTk.PhotoImage(file="./sprites/pacman_3.png")],
+                        Point(0, 1): [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(270)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(270)),
+                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(270))],
                         Point(-1, 0): [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(180)),
-                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(180)),
-                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(180))],
+                                       ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(180)),
+                                       ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(180))],
                         Point(0, -1): [ImageTk.PhotoImage(Image.open("./sprites/pacman_1.png").rotate(90)),
-                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(90)),
-                                      ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(90))]
+                                       ImageTk.PhotoImage(Image.open("./sprites/pacman_2.png").rotate(90)),
+                                       ImageTk.PhotoImage(Image.open("./sprites/pacman_3.png").rotate(90))]
                         }

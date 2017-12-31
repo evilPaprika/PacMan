@@ -7,33 +7,34 @@ from game_logic.pacman import Pacman
 from game_logic.point import Point
 import random
 
+from game_logic.wall import Wall
+
 
 class Ghost:
-    def __init__(self, x, y, board, sprite):
+    def __init__(self, x, y, board, sprite, speed):
         self.sprite = ImageTk.PhotoImage(file=sprite)
         self.scared_sprite = ImageTk.PhotoImage(file="./sprites/ghost_scared.png")
-        self.is_dead = False
         self.location = Point(x, y)
-        self.speed = 0.19
+        self.speed = speed
         self.board = board
         self.direction = Point(0, 0)
-        self.movement_marker = None
-        self.teleport_delay = False
+        self._movement_marker = None
         self.last_teleported = 0
 
     def move(self, speed):
         new_location = Point(self.location.x + self.direction.x * speed, self.location.y + self.direction.y * speed)
-        if self.movement_marker and self.location.distance(self.movement_marker[0]) + self.movement_marker[0].distance(
-                new_location) == self.location.distance(new_location):
-            new_location = self.movement_marker[0] + Point(self.movement_marker[1].x * speed,
-                                                           self.movement_marker[1].y * speed)
-            self.direction = self.movement_marker[1]
-            self.movement_marker = None
+        if self._movement_marker and self.location.distance(self._movement_marker[0]) +\
+                self._movement_marker[0].distance(new_location) == self.location.distance(new_location):
+            new_location = self._movement_marker[0] + Point(self._movement_marker[1].x * speed,
+                                                            self._movement_marker[1].y * speed)
+            self.direction = self._movement_marker[1]
+            self._movement_marker = None
         # проход через края
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
     def _get_prefered_directions(self):
+
         directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
         random.shuffle(directions)
         return directions
@@ -44,15 +45,10 @@ class Ghost:
         for direction in directions:
             if direction.is_opposite(self.direction):
                 continue
-            new_location = location + direction
-            walls = self.board.get_neighbour_walls(location)
-            for wall in walls:
-                if new_location == wall.location:
-                    break
-            else:
-                self.movement_marker = (location, direction)
+            new_location = round(location + direction)
+            if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
+                self._movement_marker = (location, direction)
                 break
-
 
     def update_position(self):
         self._make_marker()

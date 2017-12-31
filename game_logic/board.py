@@ -1,4 +1,7 @@
 import random
+
+import time
+
 from game_logic import BOARD_HIGHT, BOARD_WIDTH
 from game_logic.food import Food
 from game_logic.ghost import Ghost
@@ -20,6 +23,7 @@ class Board:
         self.generate_level()
         self.game_lost = False
         self.game_won = False
+        self.game_state = 'scatter' # scatter, chase или frightened
         self.update_board()
 
     def update_board(self):
@@ -32,6 +36,18 @@ class Board:
             self.game_won = True
         if self.pacman.lives <= 0:
             self.game_lost = True
+        self.update_game_state()
+
+
+    def update_game_state(self):
+        if self.pacman.super_power:
+            self.game_state = "frightened"
+            return
+        timer = time.time() % 15
+        if timer < 5:
+            self.game_state = 'scatter'
+        else:
+            self.game_state = 'chase'
 
     def check_collisions(self):
         pacman_location = round(self.pacman.location)
@@ -123,16 +139,16 @@ class Board:
         self.field[13][1] = PowerFood(13, 1)
 
 
-        self.pacman = Pacman(7, 9, self)
+        self.pacman = Pacman(7, 9, self, 0.2)
         self.portals.append(Portal(7, 13, 4, 4))
         self.portals.append(Portal(4, 4, 7, 13))
         self.moving_gameObjects.append(self.portals[0])
         self.moving_gameObjects.append(self.portals[1])
         self.moving_gameObjects.append(self.pacman)
-        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_red.png"))
-        self.moving_gameObjects.append(Ghost(6, 5, self, "./sprites/ghost_blue.png"))
-        self.moving_gameObjects.append(Ghost(8, 5, self, "./sprites/ghost_pink.png"))
-        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_yellow.png"))
+        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_red.png", 0.19))
+        self.moving_gameObjects.append(Ghost(6, 5, self, "./sprites/ghost_blue.png", 0.19))
+        self.moving_gameObjects.append(Ghost(8, 5, self, "./sprites/ghost_pink.png", 0.19))
+        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_yellow.png", 0.19))
 
         for i in range(BOARD_HIGHT):
             for j in range(BOARD_WIDTH):

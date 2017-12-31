@@ -61,8 +61,9 @@ class Game(tk.Frame):
                                                     font=("MV Boli", 17, "bold"), anchor='w')
         self.lives_canvas = self.canvas.create_text(340, BOARD_HIGHT * CELL_SIZE, fill="yellow",
                                                     font=("MV Boli", 17, "bold"), anchor='w')
-        for obj in itertools.chain(filter(lambda x: not isinstance(x, Wall) and not x is None,
-                                          itertools.chain.from_iterable(zip(*self.board.field))), self.board.moving_gameObjects):
+        for obj in itertools.chain(filter(lambda x: not isinstance(x, Wall) and x is not None,
+                                          itertools.chain.from_iterable(zip(*self.board.field))),
+                                   self.board.moving_gameObjects):
             obj.canvas = self.canvas.create_image(obj.location.x * CELL_SIZE, obj.location.y * CELL_SIZE,
                                                   image=obj.get_sprite(), anchor="nw")
 
