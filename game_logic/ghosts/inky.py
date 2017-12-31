@@ -5,7 +5,7 @@ from game_logic.ghost import Ghost
 class Inky(Ghost):
     def __init__(self, x, y, board, speed):
         sprite = "./sprites/ghost_blue.png"
-        super().__init__(x, y, board, sprite, speed)
+        super().__init__(x, y, board, speed, sprite)
         self.base = Point(13, 13)
 
     def _update_destination(self):

@@ -5,7 +5,7 @@ from game_logic.ghost import Ghost
 class Blinky(Ghost):
     def __init__(self, x, y, board, speed):
         sprite = "./sprites/ghost_red.png"
-        super().__init__(x, y, board, sprite, speed)
+        super().__init__(x, y, board, speed, sprite)
         self.base = Point(13, 1)
 
     def _update_destination(self):

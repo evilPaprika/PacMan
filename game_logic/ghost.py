@@ -11,7 +11,7 @@ from game_logic.wall import Wall
 
 
 class Ghost:
-    def __init__(self, x, y, board, sprite, speed):
+    def __init__(self, x, y, board, speed, sprite="./sprites/ghost_red.png"):
         self.sprite = ImageTk.PhotoImage(file=sprite)
         self.scared_sprite = ImageTk.PhotoImage(file="./sprites/ghost_scared.png")
         self.location = Point(x, y)
@@ -22,8 +22,8 @@ class Ghost:
         self.last_teleported = 0
         self.destination = Point(14, 1)
 
-    def move(self, speed):
-        new_location = Point(self.location.x + self.direction.x * speed, self.location.y + self.direction.y * speed)
+    def move(self, speed, direction):
+        new_location = Point(self.location.x + direction.x * speed, self.location.y + direction.y * speed)
         if self._movement_marker and self.location.distance(self._movement_marker[0]) +\
                 self._movement_marker[0].distance(new_location) == self.location.distance(new_location):
             new_location = self._movement_marker[0] + Point(self._movement_marker[1].x * speed,
@@ -56,7 +56,7 @@ class Ghost:
                 break
 
     def _update_destination(self):
-        raise NotImplementedError
+        self.destination = self.board.pacman.location
 
     def _account_portals(self, dest):
         # возвращает расположение портала входа, если ближе пройти по нему
@@ -69,9 +69,9 @@ class Ghost:
     def update_position(self):
         self._make_marker()
         if self.board.pacman.super_power:
-            self.move(self.speed / 2)
+            self.move(self.speed / 2, self.direction)
         else:
-            self.move(self.speed)
+            self.move(self.speed, self.direction)
 
     def get_sprite(self):
         if self.board.pacman.super_power:

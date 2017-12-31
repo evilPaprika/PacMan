@@ -50,7 +50,6 @@ class Board:
             self.game_state = 'scatter'
         else:
             self.game_state = 'chase'
-        print(self.game_state)
 
     def check_collisions(self):
         pacman_location = round(self.pacman.location)
