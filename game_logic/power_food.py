@@ -10,4 +10,3 @@ class PowerFood:
 
     def get_sprite(self):
         return self.sprite
-

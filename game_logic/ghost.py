@@ -30,6 +30,7 @@ class Ghost:
             self.direction = self._movement_marker[1]
             self._movement_marker = None
         # проход через края
+
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
                               (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
 
