@@ -15,7 +15,6 @@ from game_logic.wall import Wall
 
 class Pacman:
     def __init__(self, x, y, board, speed):
-        self.is_dead = False
         self.respawn_location = Point(x, y)
         self.location = self.respawn_location
         self.saved_direction = Point(0, 0)

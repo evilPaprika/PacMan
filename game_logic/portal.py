@@ -15,7 +15,7 @@ class Portal:
         return self.sprite
 
     def action_when_collided_with(self, obj):
-        timestamp = time.time()
+        timestamp = time.time()  # cooldown после телепорта
         if timestamp > obj.last_teleported + 1:
             obj.location = self.exit_location
             obj.last_teleported = timestamp

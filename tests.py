@@ -85,6 +85,7 @@ class TestPacman(unittest.TestCase):
         self.assertEqual(board.field[2][1], None)
         self.assertEqual(board.pacman.score, 200)
 
+
 class TestGhost(unittest.TestCase):
     def create_test_board(self, width, height, ghost_location, static_objects=None):
         root = Tk()

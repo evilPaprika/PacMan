@@ -27,7 +27,7 @@ class Board:
         self.portals = []
         self.game_lost = False
         self.game_won = False
-        self.game_state = 'scatter' # scatter, chase или frightened
+        self.game_state = 'scatter'  # scatter, chase или frightened
 
     def update_board(self):
         self.check_collisions()
@@ -62,15 +62,6 @@ class Board:
                     self.moving_gameObjects[i].action_when_collided_with(self.moving_gameObjects[j])
                     self.moving_gameObjects[j].action_when_collided_with(self.moving_gameObjects[i])
 
-    def get_neighbour_walls(self, point):
-        for dir in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-            try:
-                obj = self.field[round(point.x + dir[0])][round(point.y + dir[1])]
-                if isinstance(obj, Wall):
-                    yield obj
-            except IndexError:
-                pass
-
     def spawn_prize(self):
         i = random.randrange(15)
         j = random.randrange(15)
@@ -78,7 +69,8 @@ class Board:
             self.field[i][j] = Prize(i, j)
             self.food_left -= 1
             self.new_objects.append(self.field[i][j])
-        else: self.spawn_prize()
+        else:
+            self.spawn_prize()
 
     def generate_level(self):
         for i in range(7):
@@ -97,7 +89,6 @@ class Board:
         self.field[3][2] = (Wall(3, 2))
         self.field[3][6] = (Wall(3, 6))
         self.field[3][8] = (Wall(3, 8))
-        # self.field[4][4] = (Wall(4, 4))
         self.field[4][5] = (Wall(4, 5))
         self.field[4][6] = (Wall(4, 6))
         self.field[4][8] = (Wall(4, 8))
@@ -122,24 +113,20 @@ class Board:
 
         self.field[7][0] = (Wall(7, 0))
         self.field[7][2] = (Wall(7, 2))
-
-        self.field[7][3] = (Wall(7, 3)) #
-
+        self.field[7][3] = (Wall(7, 3))
         self.field[7][4] = (Wall(7, 4))
         self.field[7][6] = (Wall(7, 6))
         self.field[7][7] = (Wall(7, 7))
         self.field[7][8] = (Wall(7, 8))
         self.field[7][10] = (Wall(7, 10))
         self.field[7][11] = (Wall(7, 11))
-        # self.field[7][13] = (Wall(7, 13))
         self.field[7][14] = (Wall(7, 14))
-        self.field[10][4] = (Wall(10, 4)) #
+        self.field[10][4] = (Wall(10, 4))
 
         self.field[1][1] = PowerFood(1, 1)
         self.field[13][13] = PowerFood(13, 13)
         self.field[1][13] = PowerFood(1, 13)
         self.field[13][1] = PowerFood(13, 1)
-
 
         self.pacman = Pacman(7, 9, self, 0.2)
         tunnel1 = SimpleNamespace()
