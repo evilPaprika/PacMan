@@ -1,6 +1,6 @@
 import tkinter as tk
 import gui.game as game
-from game_logic import BOARD_WIDTH, BOARD_HIGHT
+from game_logic import BOARD_WIDTH, BOARD_HEIGHT
 from gui import CELL_SIZE
 
 
@@ -10,7 +10,7 @@ class Window(tk.Tk):
         self.configure(background="black")
         self.resizable(width=False, height=False)
 
-        self.geometry('{}x{}'.format(BOARD_WIDTH * CELL_SIZE, int(BOARD_HIGHT * CELL_SIZE + CELL_SIZE / 2)))
+        self.geometry('{}x{}'.format(BOARD_WIDTH * CELL_SIZE, int(BOARD_HEIGHT * CELL_SIZE + CELL_SIZE / 2)))
         self.title("Pacman")
         self.iconbitmap("./sprites/pacman_icon.ico")
         self.frame = game.Game(self)

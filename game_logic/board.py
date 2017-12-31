@@ -2,7 +2,7 @@ import random
 
 import time
 
-from game_logic import BOARD_HIGHT, BOARD_WIDTH
+from game_logic import BOARD_HEIGHT, BOARD_WIDTH
 from game_logic.food import Food
 from game_logic.ghost import Ghost
 from game_logic.pacman import Pacman
@@ -17,7 +17,7 @@ class Board:
         self.food_left = 0
         self.moving_gameObjects = []
         self.new_objects = []
-        self.field = [[None for x in range(BOARD_WIDTH)] for y in range(BOARD_HIGHT)]
+        self.field = [[None for x in range(BOARD_WIDTH)] for y in range(BOARD_HEIGHT)]
         self.pacman = None
         self.portals = []
         self.generate_level()
@@ -112,7 +112,7 @@ class Board:
         self.field[6][8] = (Wall(6, 8))
         self.field[6][10] = (Wall(6, 10))
 
-        for i in range(BOARD_HIGHT):
+        for i in range(BOARD_HEIGHT):
             for j in range(BOARD_WIDTH):
                 # отражение стен
                 obj = self.field[i][j]
@@ -151,7 +151,7 @@ class Board:
         self.moving_gameObjects.append(Ghost(8, 5, self, "./sprites/ghost_pink.png", 0.19))
         self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_yellow.png", 0.19))
 
-        for i in range(BOARD_HIGHT):
+        for i in range(BOARD_HEIGHT):
             for j in range(BOARD_WIDTH):
                 if self.field[i][j] is None:
                     self.field[i][j] = Food(i, j)

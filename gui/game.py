@@ -6,7 +6,7 @@ import winsound
 from PIL import ImageTk
 
 import game_logic.board as board
-from game_logic import BOARD_HIGHT
+from game_logic import BOARD_HEIGHT
 from game_logic import BOARD_WIDTH
 from game_logic.wall import Wall
 from gui import CELL_SIZE
@@ -20,7 +20,7 @@ class Game(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.board = board.Board()
-        self.canvas = tk.Canvas(self, width=BOARD_WIDTH * CELL_SIZE, height=(BOARD_HIGHT * CELL_SIZE) + CELL_SIZE / 2,
+        self.canvas = tk.Canvas(self, width=BOARD_WIDTH * CELL_SIZE, height=(BOARD_HEIGHT * CELL_SIZE) + CELL_SIZE / 2,
                                 background="black")
         self.canvas.pack()
         self.initialise_canvas()
@@ -57,9 +57,9 @@ class Game(tk.Frame):
         self.bg = ImageTk.PhotoImage(file="./sprites/map40_3.png")
         self.canvas.create_image(0, 0, image=self.bg, anchor="nw")
         self.canvas.focus_set()
-        self.score_canvas = self.canvas.create_text(100, BOARD_HIGHT * CELL_SIZE, fill="yellow",
+        self.score_canvas = self.canvas.create_text(100, BOARD_HEIGHT * CELL_SIZE, fill="yellow",
                                                     font=("MV Boli", 17, "bold"), anchor='w')
-        self.lives_canvas = self.canvas.create_text(340, BOARD_HIGHT * CELL_SIZE, fill="yellow",
+        self.lives_canvas = self.canvas.create_text(340, BOARD_HEIGHT * CELL_SIZE, fill="yellow",
                                                     font=("MV Boli", 17, "bold"), anchor='w')
         for obj in itertools.chain(filter(lambda x: not isinstance(x, Wall) and x is not None,
                                           itertools.chain.from_iterable(zip(*self.board.field))),
