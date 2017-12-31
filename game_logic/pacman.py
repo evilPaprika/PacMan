@@ -4,7 +4,7 @@ from threading import Timer
 from PIL import ImageTk, Image
 
 import game_logic.ghost
-from game_logic import BOARD_HIGHT, make_location_in_borders
+from game_logic import BOARD_HEIGHT, make_location_in_borders
 from game_logic import BOARD_WIDTH
 from game_logic.food import Food
 from game_logic.point import Point
@@ -56,19 +56,19 @@ class Pacman:
     def move(self, direction):
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
         # проход через края
-
         self.location = make_location_in_borders(new_location)
+
     def decide_direction(self):
         if self.direction.is_opposite(self.saved_direction):
             self.saved_direction = Point(0, 0)
             return self.direction
         if self.location != round(self.location):
             return self.last_direction
-        new_location = round(self.location + self.direction)
+        new_location = round(make_location_in_borders(self.location + self.direction))
         if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
             self.saved_direction = Point(0, 0)
             return self.direction
-        new_location = round(self.location + self.saved_direction)
+        new_location = round(make_location_in_borders(self.location + self.saved_direction))
         if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
             return self.saved_direction
         self.saved_direction = Point(0, 0)

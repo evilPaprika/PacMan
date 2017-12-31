@@ -2,7 +2,7 @@ import threading
 import time
 import winsound
 from PIL import ImageTk
-from game_logic import BOARD_WIDTH, BOARD_HEIGHT
+from game_logic import BOARD_WIDTH, BOARD_HEIGHT, make_location_in_borders
 from game_logic.pacman import Pacman
 from game_logic.point import Point
 import random
@@ -46,7 +46,7 @@ class Ghost:
         for direction in directions:
             if direction.is_opposite(self.direction):
                 continue
-            new_location = round(location + direction)
+            new_location = round(make_location_in_borders(location + direction))
             if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
                 self._movement_marker = (location, direction)
                 break

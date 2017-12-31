@@ -37,8 +37,6 @@ class Board:
         if self.pacman.lives <= 0:
             self.game_lost = True
         self.update_game_state()
-        print(self.game_state)
-
 
     def update_game_state(self):
         if self.pacman.super_power:
