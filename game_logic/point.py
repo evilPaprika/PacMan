@@ -1,3 +1,6 @@
+import math
+
+
 class Point:
     def __init__(self, x: float, y: float) -> None:
         self.x = x
@@ -6,8 +9,8 @@ class Point:
     def distance(self, other):
         x = abs(self.x - other.x)
         y = abs(self.y - other.y)
-        return y if y > x else x
-        # return (self.x - other.x)**2 + (self.y - other.y)**2
+        # return y if y > x else x
+        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
     def __hash__(self) -> int:
         a = round(self.x)
@@ -31,7 +34,10 @@ class Point:
 
     def __round__(self):
         return Point(round(self.x), round(self.y))
-    
+
+    def length(self):
+        return math.sqrt(self.x * self.x + self.y * self.y)
+
     def normalise(self):
         n_x = self.x / abs(self.x) if self.x != 0 else 0
         n_y = self.y / abs(self.y) if self.y != 0 else 0

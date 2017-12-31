@@ -75,9 +75,6 @@ class TestPacman(unittest.TestCase):
         self.assertEqual(board.pacman.super_power, 1)
 
 class TestGhost(unittest.TestCase):
-    def test_creation(self):
-        pass
-
     def test_movement(self):
         pass
 

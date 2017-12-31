@@ -55,7 +55,6 @@ class Pacman:
 
     def move(self, direction):
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
-        # проход через края
         self.location = make_location_in_borders(new_location)
 
     def decide_direction(self):

@@ -20,6 +20,7 @@ class Ghost:
         self.direction = Point(0, 0)
         self._movement_marker = None
         self.last_teleported = 0
+        self.destination = Point(14, 1)
 
     def move(self, speed):
         new_location = Point(self.location.x + self.direction.x * speed, self.location.y + self.direction.y * speed)
@@ -29,16 +30,19 @@ class Ghost:
                                                             self._movement_marker[1].y * speed)
             self.direction = self._movement_marker[1]
             self._movement_marker = None
-        # проход через края
-
-        self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
-                              (new_location.y + 0.5) % BOARD_HEIGHT - 0.5)
+        self.location = make_location_in_borders(new_location)
 
     def _get_prefered_directions(self):
-
-        directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
-        random.shuffle(directions)
-        return directions
+        if self.board.game_state == 'frightened':
+            directions = [Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1)]
+            random.shuffle(directions)
+            return directions
+        else:
+            self._update_destination()
+            directions = [Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1)]
+            course = self.location - self.destination
+            directions.sort(key=lambda x: (x + course).length())
+            return directions
 
     def _make_marker(self):
         location = round(self.location)
@@ -50,6 +54,17 @@ class Ghost:
             if not isinstance(self.board.field[new_location.x][new_location.y], Wall):
                 self._movement_marker = (location, direction)
                 break
+
+    def _update_destination(self):
+        raise NotImplementedError
+
+    def _account_portals(self, dest):
+        # возвращает расположение портала входа, если ближе пройти по нему
+        straight_distance = self.location.distance(dest)
+        for portal in self.board.portals:
+            if straight_distance > self.location.distance(portal.location) + portal.exit_location.distance(dest):
+                return portal.location
+        return dest
 
     def update_position(self):
         self._make_marker()

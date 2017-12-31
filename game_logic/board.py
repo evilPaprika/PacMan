@@ -1,10 +1,15 @@
 import random
 
 import time
+from types import SimpleNamespace
 
-from game_logic import BOARD_HEIGHT, BOARD_WIDTH
+from game_logic import BOARD_HEIGHT, BOARD_WIDTH, Point
 from game_logic.food import Food
 from game_logic.ghost import Ghost
+from game_logic.ghosts.blinky import Blinky
+from game_logic.ghosts.clyde import Clyde
+from game_logic.ghosts.inky import Inky
+from game_logic.ghosts.pinky import Pinky
 from game_logic.pacman import Pacman
 from game_logic.portal import Portal
 from game_logic.power_food import PowerFood
@@ -42,8 +47,8 @@ class Board:
         if self.pacman.super_power:
             self.game_state = "frightened"
             return
-        timer = time.time() % 15
-        if timer < 5:
+        timer = time.time() % 27
+        if timer < 7:
             self.game_state = 'scatter'
         else:
             self.game_state = 'chase'
@@ -139,15 +144,24 @@ class Board:
 
 
         self.pacman = Pacman(7, 9, self, 0.2)
+        tunnel1 = SimpleNamespace()
+        tunnel1.location = Point(0, 7)
+        tunnel1.exit_location = Point(14, 7)
+        tunnel2 = SimpleNamespace()
+        tunnel2.location = Point(14, 7)
+        tunnel2.exit_location = Point(0, 7)
         self.portals.append(Portal(7, 13, 4, 4))
         self.portals.append(Portal(4, 4, 7, 13))
+        self.portals.append(tunnel1)
+        self.portals.append(tunnel2)
         self.moving_gameObjects.append(self.portals[0])
         self.moving_gameObjects.append(self.portals[1])
         self.moving_gameObjects.append(self.pacman)
-        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_red.png", 0.19))
-        self.moving_gameObjects.append(Ghost(6, 5, self, "./sprites/ghost_blue.png", 0.19))
-        self.moving_gameObjects.append(Ghost(8, 5, self, "./sprites/ghost_pink.png", 0.19))
-        self.moving_gameObjects.append(Ghost(7, 5, self, "./sprites/ghost_yellow.png", 0.19))
+        self.blinky = Blinky(7, 5, self, 0.19)
+        self.moving_gameObjects.append(self.blinky)
+        self.moving_gameObjects.append(Pinky(8, 5, self, 0.19))
+        self.moving_gameObjects.append(Inky(6, 5, self, 0.19))
+        self.moving_gameObjects.append(Clyde(7, 5, self, 0.19))
 
         for i in range(BOARD_HEIGHT):
             for j in range(BOARD_WIDTH):
