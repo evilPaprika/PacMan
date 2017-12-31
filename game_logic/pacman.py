@@ -4,7 +4,7 @@ from threading import Timer
 from PIL import ImageTk, Image
 
 import game_logic.ghost
-from game_logic import BOARD_HIGHT
+from game_logic import BOARD_HEIGHT
 from game_logic import BOARD_WIDTH
 from game_logic.food import Food
 from game_logic.point import Point
@@ -57,7 +57,7 @@ class Pacman:
         new_location = Point(self.location.x + direction.x * self.speed, self.location.y + direction.y * self.speed)
         # проход через края
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
-                              (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
+                              (new_location.y + 0.5) % BOARD_HEIGHT - 0.5)
 
     def decide_direction(self):
         if self.direction.is_opposite(self.saved_direction):

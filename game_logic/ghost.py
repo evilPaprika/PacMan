@@ -2,7 +2,7 @@ import threading
 import time
 import winsound
 from PIL import ImageTk
-from game_logic import BOARD_WIDTH, BOARD_HIGHT
+from game_logic import BOARD_WIDTH, BOARD_HEIGHT
 from game_logic.pacman import Pacman
 from game_logic.point import Point
 import random
@@ -31,7 +31,7 @@ class Ghost:
             self._movement_marker = None
         # проход через края
         self.location = Point((new_location.x + 0.5) % BOARD_WIDTH - 0.5,
-                              (new_location.y + 0.5) % BOARD_HIGHT - 0.5)
+                              (new_location.y + 0.5) % BOARD_HEIGHT - 0.5)
 
     def _get_prefered_directions(self):
 
